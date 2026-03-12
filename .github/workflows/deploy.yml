@@ -9,11 +9,13 @@ on:
 jobs:
   build-deploy:
     runs-on: ubuntu-latest
-    # 显式指定权限（GitHub Pages部署必需）
     permissions:
       contents: write
       pages: write
       id-token: write
+    environment:  # 新增：绑定GitHub Pages环境（必需）
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
 
     steps:
       - uses: actions/checkout@v4
@@ -21,12 +23,19 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 18
+          cache: 'pnpm'  # 新增：缓存pnpm依赖，加速构建
 
       - run: npm install -g pnpm
       - run: pnpm install
       - run: pnpm run build
-      - uses: peaceiris/actions-gh-pages@v4
+
+      # 新增：上传构建产物（替代原peaceiris的部分逻辑，更适配新版GitHub Pages）
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist
-          publish_branch: gh-pages
+          path: ./dist
+
+      # 新增：部署到GitHub Pages（官方推荐，替代peaceiris/actions-gh-pages）
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
