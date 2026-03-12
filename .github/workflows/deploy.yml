@@ -13,9 +13,10 @@ jobs:
       contents: write
       pages: write
       id-token: write
-    environment:  # 新增：绑定GitHub Pages环境（必需）
+    # 必须绑定 GitHub Pages 环境
+    environment:
       name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+      url: ${{ steps.deploy.outputs.page_url }}
 
     steps:
       - uses: actions/checkout@v4
@@ -23,19 +24,31 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 18
-          cache: 'pnpm'  # 新增：缓存pnpm依赖，加速构建
+          cache: 'pnpm'  # 缓存依赖，加速构建
 
       - run: npm install -g pnpm
       - run: pnpm install
-      - run: pnpm run build
+      - run: pnpm run build  # 执行打包，生成 dist 目录
 
-      # 新增：上传构建产物（替代原peaceiris的部分逻辑，更适配新版GitHub Pages）
-      - name: Upload artifact
+      # 新增步骤1：将 dist 目录打包为 zip 文件（方便下载）
+      - name: Package dist folder
+        run: zip -r ai-chat-demo-dist.zip ./dist
+
+      # 新增步骤2：上传 zip 包为 workflow 产物（可下载）
+      - name: Upload dist artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ai-chat-demo-dist  # 产物名称（下载时显示）
+          path: ./ai-chat-demo-dist.zip  # 要上传的文件路径
+          retention-days: 30  # 产物保留30天（可选，默认90天）
+
+      # 原有步骤：上传 Pages 部署产物
+      - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./dist
+          path: ./dist  # 指向打包后的 dist 目录
 
-      # 新增：部署到GitHub Pages（官方推荐，替代peaceiris/actions-gh-pages）
+      # 原有步骤：部署到 GitHub Pages
       - name: Deploy to GitHub Pages
-        id: deployment
+        id: deploy
         uses: actions/deploy-pages@v4
