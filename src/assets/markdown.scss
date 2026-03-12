@@ -1,0 +1,47 @@
+.markdown {
+    a {
+        color: var(--blue-6);
+    }
+
+    table {
+        width: auto;
+
+        th {
+            border: 1px solid var(--gray-4);
+            background-color: var(--gray-2);
+            padding: 4px;
+            text-align: center;
+        }
+
+        td {
+            border: 1px solid var(--gray-4);
+            padding: 4px;
+        }
+    }
+
+    pre {
+        background-color: var(--gray-2);
+        padding: 8px;
+    }
+}
+
+.ai-loading-cursor {
+    display: inline-block;
+    width: 6px;
+    height: 1em;
+    margin-left: 4px;
+    background: currentColor;
+    animation: aiCursorBlink 1s infinite;
+}
+
+@keyframes aiCursorBlink {
+    0% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
