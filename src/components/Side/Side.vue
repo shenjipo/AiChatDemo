@@ -9,6 +9,12 @@
         <div class="side-content">
             <div class="menu-item" v-for="item in menuList" :key="item.name">
                 {{ item.name }}
+                <a :href="item.url" target="_blank">
+                    <el-icon style="margin-left: 8px;">
+                        <Link />
+                    </el-icon>
+                </a>
+
             </div>
         </div>
     </div>
@@ -17,12 +23,12 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import type { MenuItem } from './interface';
-
+import { Link } from '@element-plus/icons-vue'
 
 
 const menuList = ref<Array<MenuItem>>([
-    { name: 'AiChat demo', },
-    { name: 'mention-input文档' }
+    { name: 'AiChat demo仓库', url: 'https://github.com/shenjipo/AiChatDemo' },
+    { name: 'mention-input仓库', url: 'https://github.com/shenjipo/MentionEditor' }
 ])
 </script>
 
@@ -43,6 +49,8 @@ const menuList = ref<Array<MenuItem>>([
         padding: 8px;
 
         .menu-item {
+            display: flex;
+            align-items: center;
             cursor: pointer;
             margin-top: 8px;
             padding: 8px;
